@@ -29,6 +29,9 @@ class Video
     #[ORM\Column(nullable: true)]
     private ?int $duration = null;
 
+    #[ORM\ManyToOne(inversedBy: 'video')]
+    private ?Lesson $lesson = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +93,18 @@ class Video
     public function setDuration(?int $duration): static
     {
         $this->duration = $duration;
+
+        return $this;
+    }
+
+    public function getLesson(): ?Lesson
+    {
+        return $this->lesson;
+    }
+
+    public function setLesson(?Lesson $lesson): static
+    {
+        $this->lesson = $lesson;
 
         return $this;
     }

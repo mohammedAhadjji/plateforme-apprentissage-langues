@@ -1,5 +1,5 @@
 <?php
-namespace App\enum;
+namespace App\Enum;
 
 enum CEFRLevel: string
 {

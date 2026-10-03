@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Repository\LearningProgressRepository;
 use Doctrine\ORM\Mapping as ORM;
-use app\enum\CEFRLevel;
+use App\Enum\CEFRLevel;
 
 #[ORM\Entity(repositoryClass: LearningProgressRepository::class)]
 class LearningProgress
