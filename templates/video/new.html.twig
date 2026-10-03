@@ -1,0 +1,222 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une vidéo - Learn Lang{% endblock %}
+
+{% form_theme form 'bootstrap_5_layout.html.twig' %}
+
+{% block body %}
+{# Conteneur principal centré avec largeur agrandie #}
+<div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto space-y-6">
+    <div class="row justify-content-center align-items-center w-100 mx-0">
+        <div class="col-12 col-lg-10 col-xl-9">
+
+            {# Bouton de retour #}
+            <div class="mb-3">
+                <a href="{{ path('app_video_index') }}"
+                   class="btn btn-outline-secondary btn-sm rounded-pill px-3 shadow-sm">
+                    <i class="fa-solid fa-arrow-left me-2"></i>
+                    Retour aux vidéos
+                </a>
+            </div>
+
+            {# Card principale #}
+            <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+
+                {# Header de la Card #}
+                <div class="card-header bg-dark  border-0 p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 me-3">
+                            <i class="fa-solid fa-video fa-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="h5 mb-1 fw-bold">
+                                Ajouter une vidéo de formation
+                            </h1>
+                            <p class="mb-0 text-50 small">
+                                Remplissez les informations et téléversez votre fichier vidéo.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {# Body du formulaire #}
+                <div class="card-body p-4 p-md-5">
+
+                    {{ form_start(form, {
+                        'attr': {
+                            'class': 'video-upload-form',
+                            'enctype': 'multipart/form-data'
+                        }
+                    }) }}
+
+                    {# Champ : Titre #}
+                    <div class="mb-4">
+                        {{ form_label(form.title, 'Titre de la vidéo', {
+                            'label_attr': { 'class': 'form-label fw-semibold' }
+                        }) }}
+                        {{ form_widget(form.title, {
+                            'attr': {
+                                'class': 'form-control form-control-lg rounded-3',
+                                'placeholder': 'Ex. Cours de grammaire - Niveau A1',
+                            'style': 'outline: medium'
+                            }
+                        }) }}
+                        <div class="invalid-feedback d-block">
+                            {{ form_errors(form.title) }}
+                        </div>
+                    </div>
+
+                    {# Champ : Description #}
+                    <div class="mb-4">
+                        {{ form_label(form.description, 'Description', {
+                            'label_attr': { 'class': 'form-label fw-semibold',
+                            'style': 'outline: medium' }
+                        }) }}
+                        {{ form_widget(form.description, {
+                            'attr': {
+                                'class': 'form-control rounded-3',
+                                'rows': 4,
+                                'placeholder': 'Décrivez le contenu pédagogique de cette vidéo...',
+                            'style': 'outline: medium'
+                            }
+                        }) }}
+                        <div class="invalid-feedback d-block">
+                            {{ form_errors(form.description) }}
+                        </div>
+                    </div>
+
+                    {# Zone Upload vidéo XXL (Large) #}
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            <i class="fa-solid fa-file-video text-primary me-2"></i>
+                            Fichier vidéo
+                        </label>
+
+                        <div id="videoUploadZone" class="video-upload-zone rounded-4 p-5 text-center">
+                            <div class="upload-icon mb-3">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+
+                            <h5 class="fw-bold mb-2">
+                                Sélectionnez votre fichier vidéo
+                            </h5>
+
+                            <p class="text-muted small mb-4">
+                                Formats acceptés : MP4, WEBM
+                            </p>
+
+                            <div class="col-12 col-md-8 mx-auto">
+                                {{ form_widget(form.videoFile, {
+                                    'attr': {
+                                        'class': 'form-control form-control-lg rounded-3 shadow-sm bg-light border-primary',
+                                        'id': 'videoFileInput',
+                                        'accept': 'video/mp4,video/webm,video/*',
+                                       
+                                    }
+                                }) }}
+                            </div>
+
+                            <div class="invalid-feedback d-block mt-2">
+                                {{ form_errors(form.videoFile) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Actions (Boutons) #}
+                    <div class="border-top pt-4 mt-4">
+                        <div class="d-flex flex-column flex-sm-row gap-2">
+                            <a href="{{ path('app_video_index') }}"
+                               class="btn btn-outline-secondary rounded-3 px-4 py-2">
+                                <i class="fa-solid fa-xmark me-2"></i>
+                                Annuler
+                            </a>
+
+                            <!--button type="submit"
+                                    class="btn btn-primary btn-learnlang-primary rounded-3 px-4 py-2 flex-grow-1 shadow-sm">
+                                <i class="fa-solid fa-cloud-arrow-up me-2"></i>
+                                Enregistrer la vidéo
+                            </button-->
+                            <button type="submit" class="btn btn-learnlang-primary w-100 py-2 fs-6">
+                            <i class="fa-solid fa-cloud-arrow-up me-2"></i>  Enregistrer la vidéo
+                        </button>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+
+                </div>
+            </div>
+
+            {# Footer note #}
+            <div class="text-center mt-3">
+                <small class="text-muted">
+                    <i class="fa-solid fa-shield-halved me-1"></i>
+                    La vidéo sera hébergée en toute sécurité dans votre espace de formation.
+                </small>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Zone de dépôt large */
+    .video-upload-zone {
+        border: 2px dashed #cbd5e1;
+        background-color: #f8fafc;
+        transition: all 0.25s ease-in-out;
+    }
+
+    .video-upload-zone:hover {
+        border-color: #0d6efd;
+        background-color: #f0f6ff;
+    }
+
+    .video-upload-zone.has-video {
+        border-color: #198754;
+        background-color: #f2fff7;
+    }
+
+    /* Icône Upload */
+    .upload-icon {
+        width: 75px;
+        height: 75px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(13, 110, 253, 0.1);
+        color: #0d6efd;
+        font-size: 30px;
+        transition: transform 0.2s ease;
+    }
+
+    .video-upload-zone:hover .upload-icon {
+        transform: translateY(-4px);
+    }
+
+    /* Focus des champs */
+    .video-upload-form .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const videoInput = document.getElementById('videoFileInput');
+    const uploadZone = document.getElementById('videoUploadZone');
+
+    if (!videoInput || !uploadZone) return;
+
+    videoInput.addEventListener('change', function () {
+        if (this.files && this.files.length > 0) {
+            uploadZone.classList.add('has-video');
+        } else {
+            uploadZone.classList.remove('has-video');
+        }
+    });
+});
+</script>
+{% endblock %}

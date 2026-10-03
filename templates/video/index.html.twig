@@ -1,0 +1,680 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vidéos de formation - Learn Lang{% endblock %}
+
+{% block body %}
+
+<div class="flex-1 max-w-7xl w-full mx-auto flex flex-col lg:flex-row">
+      
+      <!-- MOBILE SIDEBAR OVERLAY -->
+      <div id="sidebarOverlay" onclick="closeMobileSidebar()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden lg:hidden transition-opacity"></div>
+
+      <!-- SIDEBAR NAVIGATION -->
+      <aside id="mainSidebar" style="z-index: auto" class="fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between p-4">
+        <div>
+          <!-- Sidebar Header Mobile -->
+          <div class="flex items-center justify-between lg:hidden mb-4 pb-2 border-b border-slate-200 dark:border-slate-800">
+            <span class="font-bold text-slate-700 dark:text-slate-200">Navigation</span>
+            <button onclick="closeMobileSidebar()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+              <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+          </div>
+
+          <!-- Nav Links -->
+          <nav class="space-y-1.5">
+            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <i class="fa-solid fa-chart-pie text-indigo-500 w-5"></i>
+              <span>Tableau de bord</span>
+            </a>
+
+            <a href="#" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-sm bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/50 shadow-sm">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-circle-play text-deRed w-5"></i>
+                <span>Cours Vidéo</span>
+              </div>
+              <span class="text-[10px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-deRed/10 text-deRed dark:bg-deRed/20 dark:text-red-300">Actuel</span>
+            </a>
+
+            <a href="#" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <div class="flex items-center gap-3">
+                <i class="fa-solid fa-cards-blank text-amber-500 w-5"></i>
+                <span>Vocabulaire &amp; Cartes</span>
+              </div>
+              <span id="flashcardBadgeCount" class="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                14
+              </span>
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <i class="fa-solid fa-pen-ruler text-emerald-500 w-5"></i>
+              <span>Exercices &amp; Quiz</span>
+            </a>
+
+            <a href="#" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <i class="fa-solid fa-award text-deGold w-5"></i>
+              <span>Statistiques &amp; Badges</span>
+            </a>
+          </nav>
+        </div>
+
+        <!-- Live Practice Callout Banner -->
+        <div class="mt-8 p-4 rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-900 text-white shadow-lg relative overflow-hidden border border-indigo-700/30">
+          <div class="absolute -right-3 -bottom-3 text-indigo-500/10 text-7xl font-bold">DE</div>
+          <div class="flex items-center gap-2 mb-2 text-deGold font-bold text-xs uppercase tracking-wider">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            Pratique de groupe
+          </div>
+          <h4 class="font-bold text-sm mb-1">Session Live à 18h00</h4>
+          <p class="text-xs text-slate-300 mb-3">Rejoignez Hannah pour un atelier d'expression orale.</p>
+          <button onclick="openGroupPracticeModal()" class="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-deRed to-amber-600 hover:opacity-95 text-white font-bold text-xs shadow transition">
+            Réserver ma place
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN WORKSPACE -->
+      <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto space-y-6">
+        
+        <!-- Breadcrumb & Lesson Title Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+          <div>
+            <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-2 font-medium">
+              <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400">Module 3</a>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <a href="#" class="hover:text-indigo-600 dark:hover:text-indigo-400">Au restaurant &amp; Dans la ville</a>
+              <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              <span class="text-slate-800 dark:text-slate-200 font-semibold">Leçon 3</span>
+            </nav>
+
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              Leçon 3 : Commander au restaurant &amp; Vocabulaire de la nourriture
+            </h1>
+          </div>
+
+          <!-- Mark Completed Button -->
+          <button id="markCompletedBtn" onclick="toggleLessonComplete()" class="self-start sm:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-200 font-bold text-sm shadow-sm transition-all duration-200">
+            <i id="completedCheckIcon" class="fa-regular fa-circle-check text-base"></i>
+            <span id="completedBtnText">Marquer comme terminé</span>
+          </button>
+        </div>
+
+        <!-- VIDEO PLAYER & TRANSCRIPT GRID (2 COLUMNS) -->
+             {% for video in videos %}
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Column 1: Custom Video Player Container (7 cols) -->
+          <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col">
+            
+           <div id="videoDisplayFrame"
+     class="relative aspect-video bg-black flex items-center justify-center overflow-hidden group">
+
+   <video
+    id="lessonVideo"
+    controls
+    preload="metadata"
+    playsinline
+    class="w-full h-full object-contain bg-black"
+>
+    <source
+        src="{{ asset('uploads/videos/' ~ video.videoFilename) }}"
+        type="video/mp4"
+    >
+
+    Votre navigateur ne supporte pas la vidéo HTML5.
+</video>
+
+    <!-- Professor Badge -->
+    <div class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur
+                border border-slate-700 text-white text-xs px-3 py-1.5
+                rounded-full flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span>Hannah • Berlin</span>
+    </div>
+
+    <!-- Subtitle Overlay -->
+    <div id="videoSubtitleOverlay"
+         class="absolute bottom-16 left-4 right-4 bg-slate-900/90
+                backdrop-blur text-white p-3 rounded-xl border
+                border-white/10 text-center font-medium text-sm
+                sm:text-base shadow-2xl transition-all hidden">
+        "Entschuldigung, ich möchte gerne bestellen!"
+    </div>
+
+    <!-- Center Play
+    <button
+        id="centerPlayBtn"
+        onclick="togglePlayPause()"
+        class="absolute z-10 w-16 h-16 sm:w-20 sm:h-20
+               rounded-full bg-deRed/90 hover:bg-deRed text-white
+               flex items-center justify-center shadow-2xl
+               hover:scale-110 transition-transform">
+        <i id="centerPlayIcon"
+           class="fa-solid fa-play text-2xl sm:text-3xl ml-1"></i>
+    </button> -->
+</div>
+{% endfor %}
+
+            <!-- Custom Video Controls Toolbar -->
+            <div class="p-3 sm:p-4 bg-slate-900 text-white space-y-3">
+              
+              <!-- Interactive Seek Bar 
+              <div class="flex items-center gap-3">
+                <span id="currentTimeDisplay" class="text-xs font-mono text-slate-300 w-10 text-right">01:04</span>
+                
+                <div id="progressBarContainer" onclick="seekVideo(event)" class="flex-1 h-2 bg-slate-700 rounded-full cursor-pointer relative overflow-hidden group">
+                  <div id="progressBarFill" class="bg-gradient-to-r from-deRed to-deGold h-full rounded-full w-0 transition-all duration-100" style="width: 28.7379%;"></div>
+                </div>
+
+                <span id="totalTimeDisplay" class="text-xs font-mono text-slate-400 w-10">03:45</span>
+              </div>-->
+
+              <!-- Controls Row -->
+              <div class="flex items-center justify-between flex-wrap gap-2 pt-1">
+                <div class="flex items-center gap-3">
+                  <!-- Play / Pause Button 
+                  <button id="playPauseBtn" onclick="togglePlayPause()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-white transition">
+                    <i id="playPauseIcon" class="fa-solid fa-pause text-sm"></i>
+                  </button>-->
+
+                  <!-- Rewind / Fast Forward Buttons
+                  <button onclick="skipSeconds(-10)" class="p-1.5 text-slate-300 hover:text-white text-xs font-semibold" title="-10 sec">
+                    <i class="fa-solid fa-rotate-left"></i> 10s
+                  </button>
+                  <button onclick="skipSeconds(10)" class="p-1.5 text-slate-300 hover:text-white text-xs font-semibold" title="+10 sec">
+                    10s <i class="fa-solid fa-rotate-right"></i>
+                  </button> -->
+
+                  <!-- Speed Switcher 
+                  <div class="relative">
+                    <select id="speedSelect" onchange="changePlaybackSpeed(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-deGold cursor-pointer">
+                      <option value="0.75">0.75x</option>
+                      <option value="1.0" selected="">1.0x Normal</option>
+                      <option value="1.25">1.25x</option>
+                      <option value="1.5">1.5x</option>
+                    </select>
+                  </div>-->
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                  <!-- Toggle CC Subtitles -->
+                  <button id="subtitleToggleBtn" onclick="toggleSubtitlesOverlay()" class="p-2 rounded-lg bg-deGold/20 text-deGold hover:bg-deGold/30 text-xs font-bold transition flex items-center gap-1">
+                    <i class="fa-solid fa-closed-captioning text-sm"></i>
+                    <span class="hidden sm:inline">Sous-titres</span>
+                  </button>
+
+                  <!-- Bookmark Button -->
+                  <button onclick="bookmarkCurrentTimestamp()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-deGold text-xs transition" title="Marquer cet instant">
+                    <i class="fa-solid fa-bookmark"></i>
+                  </button>
+
+                  <!-- Fullscreen Button -->
+                  <button onclick="toggleFullscreen()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs transition" title="Plein écran">
+                    <i class="fa-solid fa-expand"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Video Metadata Bar -->
+            <div class="p-4 bg-slate-100 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div class="flex items-center gap-4">
+                <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                  <i class="fa-regular fa-clock text-indigo-500"></i> Durée: 03:45
+                </span>
+                <span class="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                  <i class="fa-solid fa-book-open text-deRed"></i> 12 nouveaux mots
+                </span>
+              </div>
+              <span class="px-2.5 py-1 rounded-md bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-200 dark:border-indigo-800">
+                A1.2 Grammaire
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Column 2: Interactive Transcript Panel (5 cols) -->
+          <div class="lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden flex flex-col h-[480px]">
+            
+            <!-- Transcript Header -->
+            <div class="p-4 bg-slate-100 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-align-left text-deRed"></i>
+                <h3 class="font-bold text-sm text-slate-900 dark:text-white">Transcription Interactive</h3>
+              </div>
+
+              <!-- Translation Switch Toggle -->
+              <label class="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-600 dark:text-slate-300">
+                <span>Traduction FR</span>
+                <input type="checkbox" id="frenchTranslationToggle" onchange="toggleFrenchTranslations(this.checked)" checked="" class="sr-only peer">
+                <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-deRed relative"></div>
+              </label>
+            </div>
+
+            <!-- Scrollable Transcript Lines -->
+            <div id="transcriptList" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm">
+              
+              <!-- Line 1 -->
+              <div data-timestamp="5" class="transcript-line p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition bg-slate-50 dark:bg-slate-800/40">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <button onclick="seekVideoToTimestamp(5)" class="font-mono text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+                    <i class="fa-solid fa-play text-[10px] mr-1"></i>00:05
+                  </button>
+                  <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">Hannah</span>
+                </div>
+                <p class="font-medium leading-relaxed">
+                  <span class="clickable-word" onclick="showWordDetails('Guten Tag')">Guten Tag</span>! 
+                  <span class="clickable-word" onclick="showWordDetails('Willkommen')">Willkommen</span> im Restaurant 'Zum Bären'.
+                </p>
+                <p class="fr-translation text-xs text-slate-500 dark:text-slate-400 mt-1 italic">
+                  Bonjour ! Bienvenue au restaurant 'Zum Bären'.
+                </p>
+              </div>
+
+              <!-- Line 2 -->
+              <div data-timestamp="45" class="transcript-line p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition bg-slate-50 dark:bg-slate-800/40 border-deRed dark:border-deGold bg-deRed/5">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <button onclick="seekVideoToTimestamp(45)" class="font-mono text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+                    <i class="fa-solid fa-play text-[10px] mr-1"></i>00:45
+                  </button>
+                  <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">Client</span>
+                </div>
+                <p class="font-medium leading-relaxed">
+                  Entschuldigung, ich 
+                  <span class="clickable-word" onclick="showWordDetails('möchte')">möchte</span> gerne 
+                  <span class="clickable-word" onclick="showWordDetails('bestellen')">bestellen</span>!
+                </p>
+                <p class="fr-translation text-xs text-slate-500 dark:text-slate-400 mt-1 italic">
+                  Excusez-moi, j'aimerais commander s'il vous plaît !
+                </p>
+              </div>
+
+              <!-- Line 3 -->
+              <div data-timestamp="75" class="transcript-line p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition bg-slate-50 dark:bg-slate-800/40">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <button onclick="seekVideoToTimestamp(75)" class="font-mono text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+                    <i class="fa-solid fa-play text-[10px] mr-1"></i>01:15
+                  </button>
+                  <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">Client</span>
+                </div>
+                <p class="font-medium leading-relaxed">
+                  Haben Sie 
+                  <span class="clickable-word" onclick="showWordDetails('die Speisekarte')">die Speisekarte</span>?
+                </p>
+                <p class="fr-translation text-xs text-slate-500 dark:text-slate-400 mt-1 italic">
+                  Avez-vous le menu / la carte ?
+                </p>
+              </div>
+
+              <!-- Line 4 -->
+              <div data-timestamp="135" class="transcript-line p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition bg-slate-50 dark:bg-slate-800/40">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <button onclick="seekVideoToTimestamp(135)" class="font-mono text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+                    <i class="fa-solid fa-play text-[10px] mr-1"></i>02:15
+                  </button>
+                  <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">Client</span>
+                </div>
+                <p class="font-medium leading-relaxed">
+                  Ich nehme eine Suppe als 
+                  <span class="clickable-word" onclick="showWordDetails('die Vorspeise')">die Vorspeise</span> und 
+                  <span class="clickable-word" onclick="showWordDetails('das Wasser')">das Wasser</span>.
+                </p>
+                <p class="fr-translation text-xs text-slate-500 dark:text-slate-400 mt-1 italic">
+                  Je prends une soupe comme entrée et de l'eau.
+                </p>
+              </div>
+
+              <!-- Line 5 -->
+              <div data-timestamp="180" class="transcript-line p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-700 transition bg-slate-50 dark:bg-slate-800/40">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-1">
+                  <button onclick="seekVideoToTimestamp(180)" class="font-mono text-indigo-600 dark:text-indigo-400 font-bold hover:underline">
+                    <i class="fa-solid fa-play text-[10px] mr-1"></i>03:00
+                  </button>
+                  <span class="text-[10px] bg-slate-200 dark:bg-slate-700 px-1.5 py-0.5 rounded">Hannah</span>
+                </div>
+                <p class="font-medium leading-relaxed">
+                  Bringen Sie uns bitte 
+                  <span class="clickable-word" onclick="showWordDetails('die Rechnung')">die Rechnung</span>?
+                </p>
+                <p class="fr-translation text-xs text-slate-500 dark:text-slate-400 mt-1 italic">
+                  Pouvez-vous nous apporter l'addition s'il vous plaît ?
+                </p>
+              </div>
+
+            </div>
+
+            <!-- Footer Help Hint -->
+            <div class="p-2.5 bg-slate-100 dark:bg-slate-800 text-center text-xs text-slate-500 dark:text-slate-400 border-t border-slate-200 dark:border-slate-800 font-medium">
+              <i class="fa-regular fa-lightbulb text-deGold mr-1"></i> Astuce: Cliquez sur les mots soulignés pour voir la fiche vocabulaire.
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- BOTTOM INTERACTIVE WORKSPACE TABS -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden mt-6">
+          
+          <!-- Tab Headers -->
+          <div class="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
+            <button onclick="switchTab('vocabTab')" id="tabBtn-vocabTab" class="tab-btn px-6 py-4 font-bold text-sm border-b-2 border-deRed text-deRed dark:text-deGold flex items-center gap-2 whitespace-nowrap transition">
+              <i class="fa-solid fa-book"></i>
+              <span>Sous-titres &amp; Vocabulaire</span>
+            </button>
+
+            <button onclick="switchTab('quizTab')" id="tabBtn-quizTab" class="tab-btn px-6 py-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+              <i class="fa-solid fa-circle-question"></i>
+              <span>Quiz Rapide (3 Questions)</span>
+            </button>
+
+            <button onclick="switchTab('grammarTab')" id="tabBtn-grammarTab" class="tab-btn px-6 py-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+              <i class="fa-solid fa-spell-check"></i>
+              <span>Exercice de Grammaire</span>
+            </button>
+
+            <button onclick="switchTab('notesTab')" id="tabBtn-notesTab" class="tab-btn px-6 py-4 font-bold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-2 whitespace-nowrap transition">
+              <i class="fa-solid fa-note-sticky"></i>
+              <span>Mes Notes de cours</span>
+            </button>
+          </div>
+
+          <!-- Tab Contents -->
+          <div class="p-5 sm:p-6">
+            
+            <!-- TAB 1: VOCABULARY CARDS -->
+            <div id="vocabTab" class="tab-content block space-y-6">
+              
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h3 class="text-lg font-bold">Mots clés de la leçon (9)</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Écoutez la prononciation ou ajoutez-les à vos cartes de révision.</p>
+                </div>
+
+                <button onclick="playAllVocabAudio()" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow transition">
+                  <i class="fa-solid fa-volume-high"></i>
+                  <span>Tout écouter</span>
+                </button>
+              </div>
+
+              <!-- Vocabulary Cards Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="vocabGrid">
+                
+                <!-- Vocab Item 1 -->
+                <div class="vocab-card p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition flex items-start justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-deRed dark:text-deGold">Nom Féminin</span>
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">die Speisekarte</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">la carte / le menu</p>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="speakGerman('die Speisekarte')" class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Écouter">
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="toggleCardBookmark(this, 'die Speisekarte')" class="p-2 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ajouter aux flashcards">
+                      <i class="fa-regular fa-star text-base"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Vocab Item 2 -->
+                <div class="vocab-card p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition flex items-start justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-blue-500">Nom Neutre</span>
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">das Wasser</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">l'eau</p>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="speakGerman('das Wasser')" class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Écouter">
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="toggleCardBookmark(this, 'das Wasser')" class="p-2 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ajouter aux flashcards">
+                      <i class="fa-regular fa-star text-base"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Vocab Item 3 -->
+                <div class="vocab-card p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition flex items-start justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-deRed dark:text-deGold">Nom Féminin</span>
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">die Rechnung</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">l'addition</p>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="speakGerman('die Rechnung')" class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Écouter">
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="toggleCardBookmark(this, 'die Rechnung')" class="p-2 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ajouter aux flashcards">
+                      <i class="fa-regular fa-star text-base"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Vocab Item 4 -->
+                <div class="vocab-card p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition flex items-start justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-500">Verbe</span>
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">bestellen</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">commander</p>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="speakGerman('bestellen')" class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Écouter">
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="toggleCardBookmark(this, 'bestellen')" class="p-2 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ajouter aux flashcards">
+                      <i class="fa-regular fa-star text-base"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Vocab Item 5 -->
+                <div class="vocab-card p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition flex items-start justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-purple-500">Verbe Modal</span>
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">möchte</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">aimerait / voudrait</p>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="speakGerman('möchte')" class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Écouter">
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="toggleCardBookmark(this, 'möchte')" class="p-2 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ajouter aux flashcards">
+                      <i class="fa-regular fa-star text-base"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Vocab Item 6 -->
+                <div class="vocab-card p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 hover:border-indigo-400 transition flex items-start justify-between">
+                  <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-deRed dark:text-deGold">Nom Féminin</span>
+                    <h4 class="font-extrabold text-base text-slate-900 dark:text-white">die Vorspeise</h4>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 italic">l'entrée (plat)</p>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button onclick="speakGerman('die Vorspeise')" class="p-2 rounded-lg text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Écouter">
+                      <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                    <button onclick="toggleCardBookmark(this, 'die Vorspeise')" class="p-2 rounded-lg text-slate-400 hover:text-amber-500 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Ajouter aux flashcards">
+                      <i class="fa-regular fa-star text-base"></i>
+                    </button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- TAB 2: QUIZ TAB -->
+            <div id="quizTab" class="tab-content hidden space-y-6">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-bold">Quiz Rapide de Compréhension</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Testez votre compréhension de la leçon vidéo.</p>
+                </div>
+                <div class="text-sm font-bold bg-indigo-50 dark:bg-indigo-950/60 px-3 py-1.5 rounded-xl border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-300">
+                  Score: <span id="quizScoreText">0 / 3</span>
+                </div>
+              </div>
+
+              <!-- Question 1 -->
+              <div class="quiz-item p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-3">
+                <p class="font-bold text-sm">1. Que signifie "Ich möchte gerne bestellen"?</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button onclick="answerQuiz(1, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    A) J'aimerais payer l'addition.
+                  </button>
+                  <button onclick="answerQuiz(1, true, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    B) J'aimerais commander s'il vous plaît.
+                  </button>
+                  <button onclick="answerQuiz(1, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    C) Avez-vous une table libre ?
+                  </button>
+                  <button onclick="answerQuiz(1, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    D) Où se trouvent les toilettes ?
+                  </button>
+                </div>
+                <div id="q1Feedback" class="hidden text-xs p-2.5 rounded-lg"></div>
+              </div>
+
+              <!-- Question 2 -->
+              <div class="quiz-item p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-3">
+                <p class="font-bold text-sm">2. Quel est le genre correct du mot "Speisekarte"?</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <button onclick="answerQuiz(2, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    A) Masculin (der)
+                  </button>
+                  <button onclick="answerQuiz(2, true, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    B) Féminin (die)
+                  </button>
+                  <button onclick="answerQuiz(2, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    C) Neutre (das)
+                  </button>
+                </div>
+                <div id="q2Feedback" class="hidden text-xs p-2.5 rounded-lg"></div>
+              </div>
+
+              <!-- Question 3 -->
+              <div class="quiz-item p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 space-y-3">
+                <p class="font-bold text-sm">3. Comment demande-t-on la facture / l'addition en allemand ?</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <button onclick="answerQuiz(3, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    A) Bringen Sie uns das Wasser?
+                  </button>
+                  <button onclick="answerQuiz(3, true, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    B) Bringen Sie uns bitte die Rechnung?
+                  </button>
+                  <button onclick="answerQuiz(3, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    C) Ich möchte eine Vorspeise.
+                  </button>
+                  <button onclick="answerQuiz(3, false, this)" class="q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                    D) Guten Tag, wie geht's?
+                  </button>
+                </div>
+                <div id="q3Feedback" class="hidden text-xs p-2.5 rounded-lg"></div>
+              </div>
+
+              <div class="flex justify-end">
+                <button onclick="resetQuiz()" class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition">
+                  Recommencer le quiz
+                </button>
+              </div>
+
+            </div>
+
+            <!-- TAB 3: GRAMMAR TAB -->
+            <div id="grammarTab" class="tab-content hidden space-y-6">
+              <div>
+                <h3 class="text-lg font-bold">Exercice : Le verbe modal "möchten"</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Complétez les phrases avec la bonne forme conjuguée.</p>
+              </div>
+
+              <form id="grammarForm" onsubmit="validateGrammar(event)" class="space-y-4">
+                
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 space-y-2">
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    1. Ich <input type="text" id="g1" class="w-28 px-2 py-1 mx-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-center font-bold focus:ring-2 focus:ring-deRed focus:outline-none" placeholder="..."> gerne Wasser bestellen. (möchten)
+                  </label>
+                  <span id="g1Helper" class="text-[11px] text-slate-400 block italic">Sujet: Ich (Je)</span>
+                </div>
+
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 space-y-2">
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    2. Wir <input type="text" id="g2" class="w-28 px-2 py-1 mx-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-center font-bold focus:ring-2 focus:ring-deRed focus:outline-none" placeholder="..."> die Rechnung bezahlen. (möchten)
+                  </label>
+                  <span id="g2Helper" class="text-[11px] text-slate-400 block italic">Sujet: Wir (Nous)</span>
+                </div>
+
+                <div class="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30 space-y-2">
+                  <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    3. Was <input type="text" id="g3" class="w-28 px-2 py-1 mx-1 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-center font-bold focus:ring-2 focus:ring-deRed focus:outline-none" placeholder="..."> du trinken? (möchten)
+                  </label>
+                  <span id="g3Helper" class="text-[11px] text-slate-400 block italic">Sujet: du (Tu)</span>
+                </div>
+
+                <div class="flex items-center gap-3 pt-2">
+                  <button type="submit" class="px-5 py-2.5 rounded-xl bg-deRed hover:bg-red-700 text-white font-bold text-xs shadow transition">
+                    Vérifier mes réponses
+                  </button>
+                  <button type="button" onclick="showGrammarHintModal()" class="px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-xs font-bold transition">
+                    <i class="fa-regular fa-lightbulb text-deGold mr-1"></i> Voir la règle
+                  </button>
+                </div>
+
+              </form>
+            </div>
+
+            <!-- TAB 4: NOTES TAB -->
+            <div id="notesTab" class="tab-content hidden space-y-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 class="text-lg font-bold">Mes Notes de cours</h3>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">Rédigez vos remarques personnelles. Vos notes sont sauvegardées automatiquement.</p>
+                </div>
+
+                <!-- Template Buttons -->
+                <div class="flex items-center gap-2">
+                  <button onclick="insertNoteTemplate('phrases')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-[11px] font-semibold border border-slate-200 dark:border-slate-700">
+                    + Phrases clés
+                  </button>
+                  <button onclick="insertNoteTemplate('grammar')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-[11px] font-semibold border border-slate-200 dark:border-slate-700">
+                    + Règles grammaire
+                  </button>
+                </div>
+              </div>
+
+              <div class="relative">
+                <textarea id="lessonNotesArea" oninput="handleNotesInput()" class="w-full h-48 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-mono text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none resize-y" placeholder="Prenez vos notes ici... (ex: Ich möchte gerne = J'aimerais...)"></textarea>
+                
+                <div class="absolute bottom-3 right-3 flex items-center gap-2">
+                  <span id="autoSaveIndicator" class="text-[10px] text-emerald-500 font-bold hidden">
+                    <i class="fa-solid fa-check"></i> Sauvegardé
+                  </span>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-between text-xs text-slate-500">
+                <div class="flex gap-4">
+                  <span>Mots: <strong id="noteWordCount" class="text-slate-700 dark:text-slate-300">0</strong></span>
+                  <span>Caractères: <strong id="noteCharCount" class="text-slate-700 dark:text-slate-300">0</strong></span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <button onclick="copyNotesToClipboard()" class="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-xs font-bold transition">
+                    <i class="fa-regular fa-copy mr-1"></i> Copier
+                  </button>
+                  <button onclick="exportNotesTxt()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition">
+                    <i class="fa-solid fa-download mr-1"></i> Exporter (.txt)
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeutschLernen Academy - Plateforme d'apprentissage</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            deRed: '#DD0000',
+            deGold: '#FFCC00',
+            deBlack: '#111827',
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-short': 'bounce 0.8s ease-in-out 1',
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Font: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.5);
+      border-radius: 9999px;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: rgba(75, 85, 99, 0.5);
+    }
+
+    /* Clickable Word Styling */
+    .clickable-word {
+      cursor: pointer;
+      display: inline-block;
+      padding: 0px 3px;
+      border-radius: 4px;
+      transition: all 0.15s ease-in-out;
+      border-bottom: 2px cubic-bezier(0.4, 0, 0.2, 1) dotted currentColor;
+    }
+    .clickable-word:hover {
+      background-color: rgba(221, 0, 0, 0.15);
+      color: #DD0000;
+      transform: translateY(-1px);
+    }
+    .dark .clickable-word:hover {
+      background-color: rgba(255, 204, 0, 0.2);
+      color: #FFCC00;
+    }
+
+    /* Glow Fire Effect */
+    .fire-glow {
+      filter: drop-shadow(0 0 6px rgba(255, 120, 0, 0.7));
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed top-20 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"></div>
+
+  <!-- Main Container -->
+  <div class="flex flex-col min-h-screen">
+    
+        {# --- Header / En-tête Navigation --- #}
+        {% block header %}
+          <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 transition-colors shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          
+          <!-- Left Branding & Mobile Menu Toggle -->
+          <div class="flex items-center gap-3">
+            <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
+              <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            
+            <a href="#" class="flex items-center gap-3 group">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-deRed to-deGold p-0.5 flex items-center justify-center shadow-md shadow-indigo-500/10 group-hover:scale-105 transition-transform">
+                <div class="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center">
+                  <i class="fa-solid fa-graduation-cap text-deGold text-lg"></i>
+                </div>
+              </div>
+              <div class="hidden sm:block">
+                <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-800 dark:from-white dark:via-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                  DeutschLernen
+                </span>
+                <span class="text-xs font-semibold px-1.5 py-0.5 rounded bg-deRed/10 text-deRed dark:bg-deGold/20 dark:text-deGold ml-1">
+                  Academy
+                </span>
+              </div>
+            </a>
+
+            <!-- Central Level Selection Dropdown Badge -->
+            <div class="relative ml-2 sm:ml-6">
+              <button id="levelDropdownBtn" onclick="toggleLevelDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm font-semibold text-slate-700 dark:text-slate-200 hover:border-indigo-500 dark:hover:border-indigo-400 transition">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span id="currentLevelBadge">Niveau A1 - Débutant</span>
+                <i class="fa-solid fa-chevron-down text-xs opacity-60"></i>
+              </button>
+
+              <!-- Level Selection Menu Dropdown -->
+              <div id="levelDropdownMenu" class="hidden absolute left-0 mt-2 w-56 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl py-2 z-50">
+                <div class="px-3 py-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">Changer de niveau</div>
+                <button onclick="selectLevel('A1', 'Débutant')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between font-medium">
+                  <span>A1 - Débutant</span>
+                  <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">Actif</span>
+                </button>
+                <button onclick="selectLevel('A2', 'Élémentaire')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
+                  <span>A2 - Élémentaire</span>
+                  <i class="fa-solid fa-lock text-xs text-slate-400"></i>
+                </button>
+                <button onclick="selectLevel('B1', 'Intermédiaire')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
+                  <span>B1 - Intermédiaire</span>
+                  <i class="fa-solid fa-lock text-xs text-slate-400"></i>
+                </button>
+                <button onclick="selectLevel('B2', 'Intermédiaire Avancé')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
+                  <span>B2 - Avancé</span>
+                  <i class="fa-solid fa-lock text-xs text-slate-400"></i>
+                </button>
+                <button onclick="selectLevel('C1', 'Expert')" class="w-full text-left px-4 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between">
+                  <span>C1 - Expert</span>
+                  <i class="fa-solid fa-lock text-xs text-slate-400"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Tools & Metrics -->
+          <div class="flex items-center gap-3 sm:gap-5">
+            
+            <!-- Global Course Progress -->
+            <div class="hidden md:flex items-center gap-3 bg-slate-100 dark:bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-200/60 dark:border-slate-700/60">
+              <div class="text-xs">
+                <span class="text-slate-500 dark:text-slate-400 font-medium">Progression:</span>
+                <span id="globalProgressPercent" class="font-bold ml-1 text-indigo-600 dark:text-indigo-400">42%</span>
+              </div>
+              <div class="w-24 bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div id="globalProgressBar" class="bg-gradient-to-r from-indigo-500 via-deRed to-deGold h-full rounded-full transition-all duration-500" style="width: 42%;"></div>
+              </div>
+            </div>
+
+            <!-- Streak Badge -->
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs sm:text-sm">
+              <i class="fa-solid fa-fire text-amber-500 text-base fire-glow animate-bounce-short"></i>
+              <span>5 Jours</span>
+            </div>
+
+            <!-- Theme Toggle Button -->
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition" title="Basculer le thème">
+              <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+              <i class="fa-solid fa-sun hidden dark:inline text-lg text-deGold"></i>
+            </button>
+
+            <!-- User Profile Menu -->
+            <div class="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+              <div class="w-9 h-9 rounded-full bg-slate-800 border-2 border-deGold flex items-center justify-center font-bold text-white text-xs shadow">
+                MA
+              </div>
+              <div class="hidden xl:block text-left">
+                <div class="text-xs font-bold leading-tight">Mohammed A.</div>
+                <div class="text-[10px] text-amber-500 font-semibold">Membre Premium</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </header>
+        {% endblock %}
+
+                {% block body %}{% endblock %}
+          
+        
+
+        {# --- Pied de page / Footer --- #}
+        {% block footer %}
+            <footer class="mt-auto bg-slate-900 text-slate-400 border-t border-slate-800 py-10">
+                <div class="max-w-7xl mx-auto px-4 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <i class="fa-solid fa-graduation-cap text-indigo-500 text-2xl"></i>
+                                <span class="font-heading font-bold text-xl text-white">Learn Lang</span>
+                            </div>
+                            <p class="text-sm text-slate-400 leading-relaxed">
+                                Plateforme d'apprentissage de langues en ligne. Accédez à vos vidéos et cours partout et à tout moment.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h5 class="text-white font-bold mb-3 font-heading">Liens rapides</h5>
+                            <ul class="space-y-2 text-sm">
+                                <li><a href="#" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Nos formations</a></li>
+                                <li><a href="#" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Vidéos pédagogiques</a></li>
+                                <li><a href="#" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-angle-right text-xs"></i> Support et contact</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h5 class="text-white font-bold mb-3 font-heading">Restez connecté</h5>
+                            <div class="flex gap-4 text-lg">
+                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-facebook"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-xl bg-slate-800 hover:bg-indigo-600 text-white flex items-center justify-center transition-colors"><i class="fa-brands fa-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-slate-800 pt-6 text-center text-xs text-slate-500">
+                        &copy; {{ "now"|date("Y") }} <strong class="text-slate-300">Learn Lang</strong>. Tous droits réservés.
+                    </div>
+                </div>
+            </footer>
+        {% endblock %}
+
+  <!-- MODAL 3: GRAMMAR HINT MODAL -->
+  <div id="grammarHintModal" class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4">
+      <button onclick="closeGrammarHintModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+
+      <h3 class="text-lg font-bold flex items-center gap-2">
+        <i class="fa-solid fa-lightbulb text-deGold"></i>
+        Règle : Verbe Modal "möchten"
+      </h3>
+
+      <div class="text-xs space-y-2 leading-relaxed text-slate-600 dark:text-slate-300">
+        <p>Le verbe <strong>möchten</strong> (aimerait/voudrait) sert à exprimer un souhait de façon polie.</p>
+        <ul class="list-disc pl-5 space-y-1 font-mono text-[11px]">
+          <li><strong>Ich</strong> möchte</li>
+          <li><strong>Du</strong> möchtest</li>
+          <li><strong>Er / Sie / Es</strong> möchte</li>
+          <li><strong>Wir</strong> möchten</li>
+          <li><strong>Ihr</strong> möchtet</li>
+          <li><strong>Sie / sie</strong> möchten</li>
+        </ul>
+        <p class="text-[11px] italic bg-slate-100 dark:bg-slate-800 p-2 rounded">Note: En allemand, le verbe à l'infinitif se place à la fin de la phrase ! (ex: Ich möchte Wasser <strong>bestellen</strong>).</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULL JAVASCRIPT LOGIC -->
+  <script>
+    /* ==========================================================================
+       STATE MANAGEMENT & GLOBAL VARIABLES
+       ========================================================================== */
+    let isPlaying = false;
+    let videoCurrentTime = 0; // In seconds
+    const videoDuration = 225; // 03:45 = 225 sec
+    let videoTimer = null;
+    let playbackSpeed = 1.0;
+    let flashcardCount = 14;
+    let isLessonCompleted = false;
+    let activeModalWord = "";
+
+    // Vocabulary details database for Modal
+    const wordDatabase = {
+      'die Speisekarte': {
+        title: 'die Speisekarte',
+        type: 'Nom Féminin (Substantiv)',
+        phonetic: '[ˈʃpaɪ̯zəˌkaʁtə]',
+        translation: 'La carte / Le menu',
+        example: 'Können wir bitte die Speisekarte haben?'
+      },
+      'das Wasser': {
+        title: 'das Wasser',
+        type: 'Nom Neutre (Substantiv)',
+        phonetic: '[ˈvasɐ]',
+        translation: "L'eau",
+        example: 'Ich trinke ein kühles Wasser.'
+      },
+      'die Rechnung': {
+        title: 'die Rechnung',
+        type: 'Nom Féminin (Substantiv)',
+        phonetic: '[ˈʁɛçnʊŋ]',
+        translation: "L'addition / La facture",
+        example: 'Entschuldigung, bringen Sie uns die Rechnung?'
+      },
+      'bestellen': {
+        title: 'bestellen',
+        type: 'Verbe (Verb)',
+        phonetic: '[bəˈʃtɛlən]',
+        translation: 'Commander',
+        example: 'Ich möchte gerne eine Pizza bestellen.'
+      },
+      'möchte': {
+        title: 'möchte',
+        type: 'Verbe Modal (Modalverb)',
+        phonetic: '[ˈmœçtə]',
+        translation: 'Aimerait / Voudrait',
+        example: 'Ich möchte gerne bestellen.'
+      },
+      'die Vorspeise': {
+        title: 'die Vorspeise',
+        type: 'Nom Féminin (Substantiv)',
+        phonetic: '[ˈfoːɐ̯ˌʃpaɪ̯zə]',
+        translation: "L'entrée (plat)",
+        example: 'Als Vorspeise nehme ich eine Suppe.'
+      },
+      'Guten Tag': {
+        title: 'Guten Tag',
+        type: 'Salutation',
+        phonetic: '[ˈɡuːtn̩ ˈtaːk]',
+        translation: 'Bonjour',
+        example: 'Guten Tag! Wie geht es Ihnen?'
+      },
+      'Willkommen': {
+        title: 'Willkommen',
+        type: 'Expression',
+        phonetic: '[vɪlˈkɔmən]',
+        translation: 'Bienvenue',
+        example: 'Herzlich willkommen in Berlin!'
+      }
+    };
+
+    /* ==========================================================================
+       THEME & MOBILE SIDEBAR HANDLERS
+       ========================================================================== */
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        showToast("Thème clair activé", "info");
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        showToast("Thème sombre activé", "info");
+      }
+    }
+
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      document.getElementById('mainSidebar').classList.remove('-translate-x-full');
+      document.getElementById('sidebarOverlay').classList.remove('hidden');
+    });
+
+    function closeMobileSidebar() {
+      document.getElementById('mainSidebar').classList.add('-translate-x-full');
+      document.getElementById('sidebarOverlay').classList.add('hidden');
+    }
+
+    /* ==========================================================================
+       LEVEL SELECTION DROPDOWN
+       ========================================================================== */
+    function toggleLevelDropdown() {
+      const menu = document.getElementById('levelDropdownMenu');
+      menu.classList.toggle('hidden');
+    }
+
+    function selectLevel(levelCode, levelLabel) {
+      document.getElementById('currentLevelBadge').textContent = `Niveau ${levelCode} - ${levelLabel}`;
+      document.getElementById('levelDropdownMenu').classList.add('hidden');
+      showToast(`Niveau changé vers ${levelCode}`, "success");
+    }
+
+    // Close dropdown on outside click
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('levelDropdownMenu');
+      const btn = document.getElementById('levelDropdownBtn');
+      if (!btn.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
+
+    /* ==========================================================================
+       WEB SPEECH API (TTS DE-DE)
+       ========================================================================== */
+    function speakGerman(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'de-DE';
+        utterance.rate = 0.85; // Learner pace
+        window.speechSynthesis.speak(utterance);
+        showToast(`Lecture : "${text}"`, "info");
+      } else {
+        showToast("La synthèse vocale n'est pas supportée par votre navigateur.", "warning");
+      }
+    }
+
+    function speakGermanModal() {
+      if (activeModalWord) {
+        speakGerman(activeModalWord);
+      }
+    }
+
+    function playAllVocabAudio() {
+      const words = ["die Speisekarte", "das Wasser", "die Rechnung", "bestellen", "möchte", "die Vorspeise"];
+      let i = 0;
+      showToast("Lecture séquentielle du vocabulaire...", "info");
+
+      function speakNext() {
+        if (i < words.length) {
+          const utterance = new SpeechSynthesisUtterance(words[i]);
+          utterance.lang = 'de-DE';
+          utterance.rate = 0.85;
+          utterance.onend = () => {
+            i++;
+            setTimeout(speakNext, 500);
+          };
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+      speakNext();
+    }
+
+    /* ==========================================================================
+       VIDEO PLAYER SIMULATION
+       ========================================================================== */
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function togglePlayPause() {
+      isPlaying = !isPlaying;
+      const playIcon = document.getElementById('playPauseIcon');
+      const centerPlayIcon = document.getElementById('centerPlayIcon');
+      const centerPlayBtn = document.getElementById('centerPlayBtn');
+
+      if (isPlaying) {
+        playIcon.className = "fa-solid fa-pause text-sm";
+        centerPlayIcon.className = "fa-solid fa-pause text-2xl sm:text-3xl ml-0";
+        centerPlayBtn.classList.add('opacity-0', 'hover:opacity-100');
+        
+        videoTimer = setInterval(() => {
+          videoCurrentTime += 1 * playbackSpeed;
+          if (videoCurrentTime >= videoDuration) {
+            videoCurrentTime = videoDuration;
+            togglePlayPause();
+          }
+          updateVideoUI();
+        }, 1000);
+
+      } else {
+        playIcon.className = "fa-solid fa-play text-sm";
+        centerPlayIcon.className = "fa-solid fa-play text-2xl sm:text-3xl ml-1";
+        centerPlayBtn.classList.remove('opacity-0');
+        clearInterval(videoTimer);
+      }
+    }
+
+    function updateVideoUI() {
+      document.getElementById('currentTimeDisplay').textContent = formatTime(videoCurrentTime);
+      const percent = (videoCurrentTime / videoDuration) * 100;
+      document.getElementById('progressBarFill').style.width = `${percent}%`;
+
+      // Subtitle updates based on time
+      const subtitleBox = document.getElementById('videoSubtitleOverlay');
+      if (videoCurrentTime < 30) {
+        subtitleBox.textContent = '"Guten Tag! Willkommen im Restaurant."';
+      } else if (videoCurrentTime < 75) {
+        subtitleBox.textContent = '"Entschuldigung, ich möchte gerne bestellen!"';
+      } else if (videoCurrentTime < 135) {
+        subtitleBox.textContent = '"Haben Sie die Speisekarte?"';
+      } else if (videoCurrentTime < 180) {
+        subtitleBox.textContent = '"Ich nehme eine Suppe als die Vorspeise."';
+      } else {
+        subtitleBox.textContent = '"Bringen Sie uns bitte die Rechnung?"';
+      }
+
+      // Sync active line in transcript list
+      highlightActiveTranscriptLine();
+    }
+
+    function seekVideo(e) {
+      const bar = document.getElementById('progressBarContainer');
+      const rect = bar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const percent = clickX / rect.width;
+      videoCurrentTime = Math.min(Math.max(0, percent * videoDuration), videoDuration);
+      updateVideoUI();
+    }
+
+    function seekVideoToTimestamp(sec) {
+      videoCurrentTime = sec;
+      updateVideoUI();
+      if (!isPlaying) {
+        togglePlayPause();
+      }
+      showToast(`Saut à ${formatTime(sec)}`, "info");
+    }
+
+    function skipSeconds(sec) {
+      videoCurrentTime = Math.min(Math.max(0, videoCurrentTime + sec), videoDuration);
+      updateVideoUI();
+    }
+
+    function changePlaybackSpeed(val) {
+      playbackSpeed = parseFloat(val);
+      if (isPlaying) {
+        clearInterval(videoTimer);
+        videoTimer = setInterval(() => {
+          videoCurrentTime += 1 * playbackSpeed;
+          if (videoCurrentTime >= videoDuration) {
+            videoCurrentTime = videoDuration;
+            togglePlayPause();
+          }
+          updateVideoUI();
+        }, 1000);
+      }
+      showToast(`Vitesse de lecture: ${val}x`, "info");
+    }
+
+    function toggleSubtitlesOverlay() {
+      const sub = document.getElementById('videoSubtitleOverlay');
+      sub.classList.toggle('hidden');
+    }
+
+    function bookmarkCurrentTimestamp() {
+      showToast(`Marque-page enregistré à ${formatTime(videoCurrentTime)}`, "success");
+    }
+
+    function toggleFullscreen() {
+      const frame = document.getElementById('videoDisplayFrame');
+      if (!document.fullscreenElement) {
+        frame.requestFullscreen().catch(err => {
+          showToast("Plein écran non disponible", "warning");
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    /* ==========================================================================
+       TRANSCRIPT & WORD MODAL
+       ========================================================================== */
+    function toggleFrenchTranslations(show) {
+      const lines = document.querySelectorAll('.fr-translation');
+      lines.forEach(el => {
+        if (show) {
+          el.classList.remove('hidden');
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+    }
+
+    function highlightActiveTranscriptLine() {
+      const lines = document.querySelectorAll('.transcript-line');
+      lines.forEach(line => {
+        const time = parseInt(line.getAttribute('data-timestamp'));
+        if (videoCurrentTime >= time && videoCurrentTime < time + 45) {
+          line.classList.add('border-deRed', 'dark:border-deGold', 'bg-deRed/5');
+        } else {
+          line.classList.remove('border-deRed', 'dark:border-deGold', 'bg-deRed/5');
+        }
+      });
+    }
+
+    function showWordDetails(wordKey) {
+      activeModalWord = wordKey;
+      const modal = document.getElementById('wordModal');
+      const data = wordDatabase[wordKey] || {
+        title: wordKey,
+        type: 'Vocabulaire',
+        phonetic: '[...]',
+        translation: 'Traduction non disponible',
+        example: `Exemple avec ${wordKey}`
+      };
+
+      document.getElementById('modalWordTitle').textContent = data.title;
+      document.getElementById('modalWordType').textContent = data.type;
+      document.getElementById('modalPhonetic').textContent = data.phonetic;
+      document.getElementById('modalTranslation').textContent = data.translation;
+      document.getElementById('modalExample').textContent = `"${data.example}"`;
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeWordModal() {
+      document.getElementById('wordModal').classList.add('hidden');
+    }
+
+    function toggleModalFlashcard() {
+      flashcardCount++;
+      document.getElementById('flashcardBadgeCount').textContent = flashcardCount;
+      showToast(`"${activeModalWord}" ajouté aux cartes mémoires !`, "success");
+      closeWordModal();
+    }
+
+    function toggleCardBookmark(btn, word) {
+      const icon = btn.querySelector('i');
+      if (icon.classList.contains('fa-regular')) {
+        icon.className = "fa-solid fa-star text-amber-500 text-base";
+        flashcardCount++;
+        showToast(`"${word}" ajouté aux favoris`, "success");
+      } else {
+        icon.className = "fa-regular fa-star text-base";
+        flashcardCount--;
+        showToast(`"${word}" retiré des favoris`, "info");
+      }
+      document.getElementById('flashcardBadgeCount').textContent = flashcardCount;
+    }
+
+    /* ==========================================================================
+       TAB SWITCHING
+       ========================================================================== */
+    function switchTab(tabId) {
+      const tabs = document.querySelectorAll('.tab-content');
+      tabs.forEach(t => t.classList.add('hidden'));
+
+      const btns = document.querySelectorAll('.tab-btn');
+      btns.forEach(b => {
+        b.classList.remove('border-deRed', 'text-deRed', 'dark:text-deGold');
+        b.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      document.getElementById(tabId).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tabBtn-${tabId}`);
+      activeBtn.classList.remove('border-transparent', 'text-slate-500');
+      activeBtn.classList.add('border-deRed', 'text-deRed', 'dark:text-deGold');
+    }
+
+    /* ==========================================================================
+       QUIZ SYSTEM
+       ========================================================================== */
+    let quizState = { 1: false, 2: false, 3: false };
+    let quizScore = 0;
+
+    function answerQuiz(qNum, isCorrect, btnEl) {
+      const parent = btnEl.parentElement;
+      const opts = parent.querySelectorAll('.q-opt');
+      opts.forEach(b => {
+        b.disabled = true;
+        b.classList.remove('hover:bg-slate-100', 'dark:hover:bg-slate-700');
+      });
+
+      const feedback = document.getElementById(`q${qNum}Feedback`);
+      feedback.classList.remove('hidden');
+
+      if (isCorrect) {
+        btnEl.classList.add('bg-emerald-500', 'text-white', 'border-emerald-600');
+        feedback.className = "text-xs p-2.5 rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200 font-bold";
+        feedback.textContent = "Bravo ! Bonne réponse !";
+        if (!quizState[qNum]) {
+          quizScore++;
+          quizState[qNum] = true;
+        }
+      } else {
+        btnEl.classList.add('bg-deRed', 'text-white', 'border-red-700');
+        feedback.className = "text-xs p-2.5 rounded-lg bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200 font-bold";
+        feedback.textContent = "Incorrect. Réexaminez la vidéo pour vérifier.";
+      }
+
+      document.getElementById('quizScoreText').textContent = `${quizScore} / 3`;
+    }
+
+    function resetQuiz() {
+      quizScore = 0;
+      quizState = { 1: false, 2: false, 3: false };
+      document.getElementById('quizScoreText').textContent = "0 / 3";
+      
+      for (let i = 1; i <= 3; i++) {
+        const feedback = document.getElementById(`q${i}Feedback`);
+        feedback.classList.add('hidden');
+        
+        const parent = feedback.parentElement;
+        const opts = parent.querySelectorAll('.q-opt');
+        opts.forEach(b => {
+          b.disabled = false;
+          b.className = "q-opt p-3 text-left text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition";
+        });
+      }
+      showToast("Quiz réinitialisé", "info");
+    }
+
+    /* ==========================================================================
+       GRAMMAR EXERCISE
+       ========================================================================== */
+    function validateGrammar(e) {
+      e.preventDefault();
+      const g1 = document.getElementById('g1').value.trim().toLowerCase();
+      const g2 = document.getElementById('g2').value.trim().toLowerCase();
+      const g3 = document.getElementById('g3').value.trim().toLowerCase();
+
+      let correct = 0;
+
+      if (g1 === 'möchte') {
+        document.getElementById('g1').className = "w-28 px-2 py-1 mx-1 rounded border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold text-center";
+        correct++;
+      } else {
+        document.getElementById('g1').className = "w-28 px-2 py-1 mx-1 rounded border-2 border-deRed bg-red-50 text-deRed font-bold text-center";
+      }
+
+      if (g2 === 'möchten') {
+        document.getElementById('g2').className = "w-28 px-2 py-1 mx-1 rounded border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold text-center";
+        correct++;
+      } else {
+        document.getElementById('g2').className = "w-28 px-2 py-1 mx-1 rounded border-2 border-deRed bg-red-50 text-deRed font-bold text-center";
+      }
+
+      if (g3 === 'möchtest') {
+        document.getElementById('g3').className = "w-28 px-2 py-1 mx-1 rounded border-2 border-emerald-500 bg-emerald-50 text-emerald-800 font-bold text-center";
+        correct++;
+      } else {
+        document.getElementById('g3').className = "w-28 px-2 py-1 mx-1 rounded border-2 border-deRed bg-red-50 text-deRed font-bold text-center";
+      }
+
+      if (correct === 3) {
+        showToast("Excellence ! 3/3 réponses correctes !", "success");
+      } else {
+        showToast(`Score : ${correct}/3. Vérifiez les cases rouges.`, "warning");
+      }
+    }
+
+    function showGrammarHintModal() {
+      document.getElementById('grammarHintModal').classList.remove('hidden');
+    }
+
+    function closeGrammarHintModal() {
+      document.getElementById('grammarHintModal').classList.add('hidden');
+    }
+
+    /* ==========================================================================
+       NOTES EDITOR
+       ========================================================================== */
+    function initNotes() {
+      const saved = localStorage.getItem('lesson3_notes');
+      if (saved) {
+        document.getElementById('lessonNotesArea').value = saved;
+        updateNoteCounts();
+      }
+    }
+
+    function handleNotesInput() {
+      const txt = document.getElementById('lessonNotesArea').value;
+      localStorage.setItem('lesson3_notes', txt);
+      
+      const indicator = document.getElementById('autoSaveIndicator');
+      indicator.classList.remove('hidden');
+      setTimeout(() => indicator.classList.add('hidden'), 2000);
+
+      updateNoteCounts();
+    }
+
+    function updateNoteCounts() {
+      const txt = document.getElementById('lessonNotesArea').value;
+      document.getElementById('noteCharCount').textContent = txt.length;
+      const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+      document.getElementById('noteWordCount').textContent = words;
+    }
+
+    function insertNoteTemplate(type) {
+      const area = document.getElementById('lessonNotesArea');
+      if (type === 'phrases') {
+        area.value += "\n- Ich möchte gerne bestellen (Je voudrais commander)\n- Bringen Sie uns die Rechnung (Apportez l'addition)\n";
+      } else if (type === 'grammar') {
+        area.value += "\n[Règle möchten]:\nIch möchte, Du möchtest, Wir möchten.\nL'infinitif va en fin de phrase !\n";
+      }
+      handleNotesInput();
+    }
+
+    function copyNotesToClipboard() {
+      const area = document.getElementById('lessonNotesArea');
+      navigator.clipboard.writeText(area.value);
+      showToast("Notes copiées dans le presse-papier !", "success");
+    }
+
+    function exportNotesTxt() {
+      const txt = document.getElementById('lessonNotesArea').value;
+      const blob = new Blob([txt], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'DeutschLernen_Lesson3_Notes.txt';
+      a.click();
+      showToast("Téléchargement du fichier de notes...", "info");
+    }
+
+    /* ==========================================================================
+       LESSON COMPLETION & PROGRESS UPDATE
+       ========================================================================== */
+    function toggleLessonComplete() {
+      isLessonCompleted = !isLessonCompleted;
+      const btn = document.getElementById('markCompletedBtn');
+      const icon = document.getElementById('completedCheckIcon');
+      const text = document.getElementById('completedBtnText');
+      const progressBar = document.getElementById('globalProgressBar');
+      const progressPercent = document.getElementById('globalProgressPercent');
+
+      if (isLessonCompleted) {
+        btn.className = "self-start sm:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md transition-all duration-200";
+        icon.className = "fa-solid fa-circle-check text-base";
+        text.textContent = "Terminé !";
+        progressBar.style.width = "47%";
+        progressPercent.textContent = "47%";
+        showToast("Leçon validée ! +5% de progression !", "success");
+      } else {
+        btn.className = "self-start sm:self-auto flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 text-slate-700 dark:text-slate-200 font-bold text-sm shadow-sm transition-all duration-200";
+        icon.className = "fa-regular fa-circle-check text-base";
+        text.textContent = "Marquer comme terminé";
+        progressBar.style.width = "42%";
+        progressPercent.textContent = "42%";
+        showToast("Statut réinitialisé", "info");
+      }
+    }
+
+    /* ==========================================================================
+       GROUP PRACTICE MODAL HANDLERS
+       ========================================================================== */
+    function openGroupPracticeModal() {
+      document.getElementById('groupPracticeModal').classList.remove('hidden');
+    }
+
+    function closeGroupPracticeModal() {
+      document.getElementById('groupPracticeModal').classList.add('hidden');
+    }
+
+    function confirmGroupBooking() {
+      closeGroupPracticeModal();
+      showToast("Réservation confirmée ! Vous recevrez une notification 10 minutes avant.", "success");
+    }
+
+    /* ==========================================================================
+       TOAST SYSTEM
+       ========================================================================== */
+    function showToast(message, type = "info") {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      let bgClass = "bg-slate-900 text-white border-slate-700";
+      let iconClass = "fa-info-circle text-indigo-400";
+
+      if (type === "success") {
+        bgClass = "bg-emerald-950 text-emerald-100 border-emerald-800";
+        iconClass = "fa-circle-check text-emerald-400";
+      } else if (type === "warning") {
+        bgClass = "bg-amber-950 text-amber-100 border-amber-800";
+        iconClass = "fa-triangle-exclamation text-amber-400";
+      }
+
+      toast.className = `flex items-center gap-3 p-3.5 rounded-xl border shadow-xl text-xs font-semibold pointer-events-auto transition-all transform translate-y-2 opacity-0 ${bgClass}`;
+      toast.innerHTML = `
+        <i class="fa-solid ${iconClass} text-base"></i>
+        <span class="flex-1">${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      // Trigger enter animation
+      setTimeout(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      }, 10);
+
+      // Remove after 3.5s
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    /* ==========================================================================
+       INITIALIZATION ON WINDOW LOAD
+       ========================================================================== */
+    window.onload = function() {
+      initTheme();
+      initNotes();
+      updateVideoUI();
+    };
+  </script>
+</body>
+</html>
